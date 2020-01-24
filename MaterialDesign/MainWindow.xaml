@@ -1,0 +1,69 @@
+﻿<Window x:Class="MaterialDesign.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MaterialDesign"
+        mc:Ignorable="d"        
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="MainWindow" Height="608" Width="476">
+    <Grid>
+        <StackPanel>
+            
+            <TextBox Margin="5 5 5 5"
+              materialDesign:HintAssist.Hint="Enter path to database file"
+              materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
+              materialDesign:HintAssist.FloatingScale="0.50"
+              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+              FontSize="24" />
+            
+            <Grid>
+                <Button x:Name="SelectBtn" Margin="10 5 5 5"
+                Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                Width="400"
+                ToolTip="Resource name: MaterialDesignRaisedAccentButton"
+                materialDesign:RippleAssist.Feedback="#DD000000" Content="Select file"/>
+            </Grid>
+
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="StartBtn" Margin="5 5 5 5"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                        Width="120"
+                        ToolTip="Resource name: MaterialDesignRaisedAccentButton"
+                        materialDesign:RippleAssist.Feedback="#DD000000" Content="Start" Click="StartBtn_Click"/>
+                    <Button x:Name="ClearBtn" Margin="5 5 5 5"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                        Width="150"
+                        ToolTip="Resource name: MaterialDesignRaisedAccentButton"
+                        materialDesign:RippleAssist.Feedback="#DD000000" Content="Cycle over items" Click="CycleBtn_Click"/>
+
+                    <TextBlock x:Name="time_text" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="5 8 5 5" Text="Time taken is: "/>
+
+                </StackPanel>                
+            </Grid>
+
+            <ProgressBar x:Name="ProgressBar1" Margin="5 5 5 5" Height="20" />
+
+            <Grid Height="300">
+                <DataGrid x:Name="MyGrid"
+                  VerticalScrollBarVisibility="Visible"
+                  Margin="5 5 5 5"
+                  ItemsSource="{Binding Items3}"
+                  CanUserSortColumns="True"
+                  CanUserAddRows="False"
+                  materialDesign:DataGridAssist.CellPadding="4 2 2 2"
+                  materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2"
+                  IsReadOnly="True" />
+            </Grid>
+            
+        </StackPanel>        
+    </Grid>
+</Window>
