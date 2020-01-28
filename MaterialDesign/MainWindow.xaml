@@ -13,7 +13,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="608" Width="476">
+        Title="MainWindow" Height="608" Width="800">
     <Grid>
         <StackPanel>
             
@@ -56,7 +56,7 @@
                 <DataGrid x:Name="MyGrid"
                   VerticalScrollBarVisibility="Visible"
                   Margin="5 5 5 5"
-                  ItemsSource="{Binding Items3}"
+                  ItemsSource="{Binding Source=albums}"
                   CanUserSortColumns="True"
                   CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="4 2 2 2"
@@ -64,6 +64,18 @@
                   IsReadOnly="True" />
             </Grid>
             
+            <TextBox x:Name="Filter_Textbox" materialDesign:HintAssist.Hint="Filter by Artist"
+              materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
+              materialDesign:HintAssist.FloatingScale="0.50"
+              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+              FontSize="24" />
+
+            <Button x:Name="FilterBtn" Margin="10 5 5 5"
+                Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                Width="200"
+                ToolTip="Resource name: MaterialDesignRaisedAccentButton"
+                materialDesign:RippleAssist.Feedback="#DD000000" Content="Apply filter" Click="FilterBtn_Click"/>
+
         </StackPanel>        
     </Grid>
 </Window>

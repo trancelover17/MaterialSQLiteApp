@@ -1,32 +1,34 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Linq;
 using System.Diagnostics;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace MaterialDesign 
+namespace MaterialDesign
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
-        private static Albums[] albums;
-
+    {       
         public MainWindow()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             Stopwatch s = Stopwatch.StartNew();
 
-            using (var db = new AlbumsContext())
+            using (var db = new DatabaseContext())
             {
-                albums = db.Albums.OrderBy(b => b.AlbumId).ToArrayAsync().Result;
-                MyGrid.ItemsSource = albums;
+                var query = from album in db.Albums
+                            join artist in db.Artists on album.ArtistId equals artist.ArtistId
+                            select new { album.Title, artist.Name };
+                MyGrid.ItemsSource = query.ToArrayAsync().Result;
             }
             s.Stop();
             var ts = s.Elapsed;
@@ -39,12 +41,36 @@ namespace MaterialDesign
             ProgressBar1.Minimum = 0;
             ProgressBar1.Maximum = MyGrid.Items.Count - 1;
 
-            foreach (var item in albums)
+            //foreach (var item in albums)
+            //{
+            //    item.Album = $"+++ {item.Album}";
+            //    ProgressBar1.Value++;
+            //    MyGrid.Items.Refresh();
+            //}
+            for (int i = 0; i < MyGrid.Items.Count - 1; i++)
             {
-                item.Title = $"+++ {item.Title}";
                 ProgressBar1.Value++;
-                MyGrid.Items.Refresh();
             }
+        }
+
+        private void FilterBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ////TextBox t = (TextBox)sender;
+            //string filter = Filter_Textbox.Text;
+            //ICollectionView cv = CollectionViewSource.GetDefaultView(MyGrid.ItemsSource);
+            //if (filter == "")
+            //    cv.Filter = null;
+            //else
+            //{
+            //    cv.Filter = o =>
+            //    {
+            //        return MyGrid.Items.Contains(filter);
+            //        //Person p = o as Person;
+            //        //if (t.Name == "txtId")
+            //        //    return (p.Id == Convert.ToInt32(filter));
+            //        //return (p.Name.ToUpper().StartsWith(filter.ToUpper()));
+            //    };
+            //}
         }
     }
 }
