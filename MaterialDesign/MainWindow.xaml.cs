@@ -13,7 +13,8 @@ namespace MaterialDesign
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {       
+    {
+        private Albums[] items;
         public MainWindow()
         {
             InitializeComponent();
@@ -21,19 +22,24 @@ namespace MaterialDesign
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
-            Stopwatch s = Stopwatch.StartNew();
+            Task.Run(() =>
+            { 
+                Stopwatch s = Stopwatch.StartNew();
 
-            using (var db = new DatabaseContext())
-            {
-                var query = from album in db.Albums
-                            join artist in db.Artists on album.ArtistId equals artist.ArtistId
-                            select new { album.Title, artist.Name };
-                MyGrid.ItemsSource = query.ToArrayAsync().Result;
-            }
-            s.Stop();
-            var ts = s.Elapsed;
+                using (var db = new DatabaseContext())
+                {
+                    items = db.Albums.OrderBy(b => b.AlbumId).ToArrayAsync().Result;
+                }
+                s.Stop();
+                var ts = s.Elapsed;
 
-            time_text.Text = $"Time taken is: {String.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds / 10)}";
+                Dispatcher.Invoke(() =>
+                {
+                    time_text.Text = $"Time taken is: {String.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds / 10)}";
+                    MyGrid.ItemsSource = items;
+                });
+            });
+
         }
         private void CycleBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -41,36 +47,17 @@ namespace MaterialDesign
             ProgressBar1.Minimum = 0;
             ProgressBar1.Maximum = MyGrid.Items.Count - 1;
 
-            //foreach (var item in albums)
-            //{
-            //    item.Album = $"+++ {item.Album}";
-            //    ProgressBar1.Value++;
-            //    MyGrid.Items.Refresh();
-            //}
-            for (int i = 0; i < MyGrid.Items.Count - 1; i++)
-            {
-                ProgressBar1.Value++;
-            }
-        }
-
-        private void FilterBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ////TextBox t = (TextBox)sender;
-            //string filter = Filter_Textbox.Text;
-            //ICollectionView cv = CollectionViewSource.GetDefaultView(MyGrid.ItemsSource);
-            //if (filter == "")
-            //    cv.Filter = null;
-            //else
-            //{
-            //    cv.Filter = o =>
-            //    {
-            //        return MyGrid.Items.Contains(filter);
-            //        //Person p = o as Person;
-            //        //if (t.Name == "txtId")
-            //        //    return (p.Id == Convert.ToInt32(filter));
-            //        //return (p.Name.ToUpper().StartsWith(filter.ToUpper()));
-            //    };
-            //}
+            Task.Run(() => {
+                for (int i = 0; i < items.Length - 1; i++)
+                {
+                    Task.Delay(10).Wait();
+                    items[i].Title = $"+++ {items[i].Title}";
+                    Dispatcher.Invoke( () =>
+                    {
+                        ProgressBar1.Value++;
+                    });
+                }
+            });            
         }
     }
 }
