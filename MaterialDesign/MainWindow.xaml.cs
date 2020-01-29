@@ -14,17 +14,6 @@ namespace MaterialDesign
     public partial class MainWindow : Window
     {
         private Albums[] items;
-        //private string _db_path;
-        //public string db_path
-        //{
-        //    get { return _db_path; }
-        //    set 
-        //    {
-        //        _db_path = $@"Data Source={value}";
-        //        FilenameTextbox.Text = value;
-        //        DatabaseContext.db_path = $@"Data Source={value}";
-        //    }
-        //}
 
         public MainWindow()
         {
@@ -84,9 +73,7 @@ namespace MaterialDesign
             // Process open file dialog box results
             if (result == true)
             {
-                // Open document
-                //db_path = dlg.FileName;
-                DatabaseContext.db_path = $@"Data Source={dlg.FileName}";
+                DatabaseContext.db_path = dlg.FileName;
                 FilenameTextbox.Text = dlg.FileName;
             }
         }
