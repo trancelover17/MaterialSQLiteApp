@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace MaterialDesign
 {
@@ -15,6 +14,18 @@ namespace MaterialDesign
     public partial class MainWindow : Window
     {
         private Albums[] items;
+        //private string _db_path;
+        //public string db_path
+        //{
+        //    get { return _db_path; }
+        //    set 
+        //    {
+        //        _db_path = $@"Data Source={value}";
+        //        FilenameTextbox.Text = value;
+        //        DatabaseContext.db_path = $@"Data Source={value}";
+        //    }
+        //}
+
         public MainWindow()
         {
             InitializeComponent();
@@ -58,6 +69,26 @@ namespace MaterialDesign
                     });
                 }
             });            
+        }
+
+        private void SelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Configure open file dialog box
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = ".db"; // Default file extension
+            dlg.Filter = "SQLite databases (*.db;*.sdb;*.sqlite)|*.db;*.sdb;*sqlite"; // Filter files by extension
+
+            // Show open file dialog box
+            bool? result = dlg.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                //db_path = dlg.FileName;
+                DatabaseContext.db_path = $@"Data Source={dlg.FileName}";
+                FilenameTextbox.Text = dlg.FileName;
+            }
         }
     }
 }

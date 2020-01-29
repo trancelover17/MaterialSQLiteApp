@@ -16,8 +16,8 @@
         Title="MainWindow" Height="608" Width="800">
     <Grid>
         <StackPanel>
-            
-            <TextBox Margin="5 5 5 5"
+
+            <TextBox x:Name="FilenameTextbox" Margin="5 5 5 5"
               materialDesign:HintAssist.Hint="Enter path to database file"
               materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
               materialDesign:HintAssist.FloatingScale="0.50"
@@ -29,7 +29,7 @@
                 Style="{StaticResource MaterialDesignRaisedAccentButton}"
                 Width="400"
                 ToolTip="Resource name: MaterialDesignRaisedAccentButton"
-                materialDesign:RippleAssist.Feedback="#DD000000" Content="Select file"/>
+                materialDesign:RippleAssist.Feedback="#DD000000" Content="Select file" Click="SelectBtn_Click"/>
             </Grid>
 
             <Grid>

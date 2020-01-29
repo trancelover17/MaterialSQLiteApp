@@ -6,8 +6,9 @@ namespace MaterialDesign
     {
         public DbSet<Albums> Albums { get; set; }
         public DbSet<Artists> Artists { get; set; }
+        public static string db_path { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite(@"Data Source=C:\Users\vyacheslav.v.sorokin\Documents\!Разработки мои\mydb.db");
+            => options.UseSqlite(db_path);
     }
 }
