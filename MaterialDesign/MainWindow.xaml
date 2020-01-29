@@ -13,7 +13,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="608" Width="476">
+        Title="MainWindow" Height="608" Width="800">
     <Grid>
         <StackPanel>
             
@@ -56,14 +56,14 @@
                 <DataGrid x:Name="MyGrid"
                   VerticalScrollBarVisibility="Visible"
                   Margin="5 5 5 5"
-                  ItemsSource="{Binding Items3}"
+                  ItemsSource="{Binding Source=albums}"
                   CanUserSortColumns="True"
                   CanUserAddRows="False"
                   materialDesign:DataGridAssist.CellPadding="4 2 2 2"
                   materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2"
                   IsReadOnly="True" />
             </Grid>
-            
+
         </StackPanel>        
     </Grid>
 </Window>
