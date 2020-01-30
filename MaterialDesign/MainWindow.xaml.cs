@@ -22,8 +22,12 @@ namespace MaterialDesign
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
+            // There is no way (at least, I didn't find it) to load data via EF Core asynchronously.
+            // Because of using 'DbContext' class obtaining data from DB will be always run synchronously, and
+            // the UI thread will be freeze until the reading ends. So, that's why we need to use Task.Run()
+            // for running reading in another thread from threap pool.
             Task.Run(() =>
-            { 
+            {
                 Stopwatch s = Stopwatch.StartNew();
 
                 using (var db = new DatabaseContext())
@@ -64,7 +68,6 @@ namespace MaterialDesign
         {
             // Configure open file dialog box
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.DefaultExt = ".db"; // Default file extension
             dlg.Filter = "SQLite databases (*.db;*.sdb;*.sqlite)|*.db;*.sdb;*sqlite"; // Filter files by extension
 
             // Show open file dialog box
@@ -73,7 +76,7 @@ namespace MaterialDesign
             // Process open file dialog box results
             if (result == true)
             {
-                DatabaseContext.db_path = dlg.FileName;
+                DatabaseContext.Db_path = dlg.FileName;
                 FilenameTextbox.Text = dlg.FileName;
             }
         }
