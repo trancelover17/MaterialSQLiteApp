@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MaterialDesign"
+        xmlns:local="clr-namespace:MaterialDesign" 
         mc:Ignorable="d"        
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -32,6 +32,10 @@
                 ToolTip="Resource name: MaterialDesignRaisedAccentButton"
                 materialDesign:RippleAssist.Feedback="#DD000000" Content="Select file" Click="SelectBtn_Click"/>
             </Grid>
+            
+            <ComboBox x:Name="tablesCombobox" materialDesign:HintAssist.Hint="Select table for displaying" MinWidth="72"
+                  Margin="5 5 5 5" VerticalAlignment="Bottom" ItemsSource="{Binding CmbContent}">
+            </ComboBox>
 
             <Grid>
                 <StackPanel Orientation="Horizontal">

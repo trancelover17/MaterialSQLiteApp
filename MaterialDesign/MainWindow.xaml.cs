@@ -1,58 +1,85 @@
 ﻿using System.Windows;
-using System.Linq;
 using System.Diagnostics;
-using System;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace MaterialDesign
-{
-
+{    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Albums[] items;
+        static List<Albums> items = new List<Albums>();
+        //static string tableCommand = "select * from Albums";
+        static string dbpath = string.Empty;
+        static SqliteConnection db;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        async void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             // There is no way (at least, I didn't find it) to load data via EF Core asynchronously.
             // Because of using 'DbContext' class obtaining data from DB will be always run synchronously, and
-            // the UI thread will be freeze until the reading ends. So, that's why we need to use Task.Run()
-            // for running reading in another thread from threap pool.
-            Task.Run(() =>
+            // the UI thread will be freeze until the reading ends. So, that's why we may use Task.Run()
+            // for running reading in another thread from threap pool. Or, use Microsoft.Data.Sqlite library
+            // which supports async methods for SQLite databases access.
+
+            if (string.IsNullOrEmpty(dbpath) || tablesCombobox.Text == string.Empty)
             {
-                Stopwatch s = Stopwatch.StartNew();
+                MessageBox.Show("DB file or table isn't choosen!");
+                return;
+            }
+            Stopwatch s = Stopwatch.StartNew();
 
-                using (var db = new DatabaseContext())
-                {
-                    items = db.Albums.OrderBy(b => b.AlbumId).ToArrayAsync().Result;
-                }
-                s.Stop();
-                var ts = s.Elapsed;
+            await PerformSQLiteAsync(new SqliteCommand("select * from Albums", db));
 
-                Dispatcher.Invoke(() =>
-                {
-                    time_text.Text = $"Time taken is: {String.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds / 10)}";
-                    MyGrid.ItemsSource = items;
-                });
-            });
+            s.Stop();
+            var ts = s.Elapsed;
 
+            time_text.Text = $"Time taken is: {string.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds / 10)}";
+            MyGrid.ItemsSource = items;
         }
-        private void CycleBtn_Click(object sender, RoutedEventArgs e)
+        async static Task PerformSQLiteAsync(SqliteCommand tableCommand)
+        {
+            await db.OpenAsync();
+
+            SqliteDataReader query = await tableCommand.ExecuteReaderAsync();
+
+            while (await query.ReadAsync())
+            {
+                items.Add(new Albums { AlbumId = query.GetInt32(0), Title = query.GetString(1), ArtistId = query.GetInt32(2) });
+            }
+            await db.CloseAsync();
+        }
+        async static Task<string[]> GetTablesAsync()
+        {
+            var query = "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name";
+            await db.OpenAsync();
+            SqliteDataReader dbreader = await new SqliteCommand(query, db).ExecuteReaderAsync();
+            List<string> tables = new List<string>();
+
+            while (await dbreader.ReadAsync())
+            {
+                //items.Add(new Albums { AlbumId = dbreader.GetInt32(0), Title = dbreader.GetString(1), ArtistId = dbreader.GetInt32(2) });
+                tables.Add(dbreader.GetString(0));
+            }
+            await db.CloseAsync();
+            return tables.ToArray();
+        }
+        void CycleBtn_Click(object sender, RoutedEventArgs e)
         {
             ProgressBar1.Value = 0;
             ProgressBar1.Minimum = 0;
             ProgressBar1.Maximum = MyGrid.Items.Count - 1;
 
             Task.Run(() => {
-                for (int i = 0; i < items.Length - 1; i++)
+                for (int i = 0; i < items.Count - 1; i++)
                 {
                     Task.Delay(10).Wait();
                     items[i].Title = $"+++ {items[i].Title}";
@@ -64,7 +91,7 @@ namespace MaterialDesign
             });            
         }
 
-        private void SelectBtn_Click(object sender, RoutedEventArgs e)
+        private async void SelectBtn_Click(object sender, RoutedEventArgs e)
         {
             // Configure open file dialog box
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -76,9 +103,12 @@ namespace MaterialDesign
             // Process open file dialog box results
             if (result == true)
             {
-                DatabaseContext.Db_path = dlg.FileName;
+                dbpath = dlg.FileName;
+                db = new SqliteConnection($"Filename={dlg.FileName}");
                 FilenameTextbox.Text = dlg.FileName;
             }
+            //string[] tables = { "123", "456", "789" };
+            this.DataContext = new ViewModel(await GetTablesAsync());
         }
     }
 }
